@@ -1,0 +1,99 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "node bin/server.js",
+    "build": "node ace build",
+    "dev": "node ace serve --hmr",
+    "test": "node ace test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit"
+  },
+  "eslintConfig": {
+    "extends": "@adonisjs/eslint-config/app"
+  },
+  "imports": {
+    "#controllers/*": "./app/controllers/*.ts",
+    "#exceptions/*": "./app/exceptions/*.ts",
+    "#jobs/*": "./app/jobs/*.ts",
+    "#models/*": "./app/models/*.ts",
+    "#mails/*": "./app/mails/*.ts",
+    "#services/*": "./app/services/*.ts",
+    "#listeners/*": "./app/listeners/*.ts",
+    "#events/*": "./app/events/*.ts",
+    "#middleware/*": "./app/middleware/*.ts",
+    "#validators/*": "./app/validators/*.ts",
+    "#providers/*": "./providers/*.ts",
+    "#policies/*": "./app/policies/*.ts",
+    "#abilities/*": "./app/abilities/*.ts",
+    "#database/*": "./database/*.ts",
+    "#start/*": "./start/*.ts",
+    "#tests/*": "./tests/*.ts",
+    "#types/*": "./types/*.ts",
+    "#config/*": "./config/*.ts"
+  },
+  "devDependencies": {
+    "@adonisjs/assembler": "^7.8.1",
+    "@adonisjs/eslint-config": "^2.0.0-beta.6",
+    "@adonisjs/prettier-config": "^1.4.0",
+    "@adonisjs/tsconfig": "^1.4.0",
+    "@japa/api-client": "^2.0.3",
+    "@japa/assert": "^3.0.0",
+    "@japa/plugin-adonisjs": "^3.0.1",
+    "@japa/runner": "^3.1.4",
+    "@swc/core": "^1.7.22",
+    "@types/jsdom": "^21.1.7",
+    "@types/luxon": "^3.4.2",
+    "@types/node": "^22.5.1",
+    "eslint": "^9.9.1",
+    "hot-hook": "^0.3.0",
+    "pino-pretty": "^11.2.2",
+    "prettier": "^3.3.3",
+    "ts-node-maintained": "^10.9.4",
+    "typescript": "~5.5"
+  },
+  "dependencies": {
+    "@adonisjs/auth": "^9.2.3",
+    "@adonisjs/core": "^6.12.1",
+    "@adonisjs/cors": "^2.2.1",
+    "@adonisjs/lock": "^1.1.1",
+    "@adonisjs/lucid": "^21.2.0",
+    "@adonisjs/redis": "^9.1.0",
+    "@vinejs/vine": "^2.1.0",
+    "axios": "^1.7.7",
+    "blurhash": "^2.0.5",
+    "cheerio": "^1.0.0",
+    "cron": "^3.1.7",
+    "ioredis": "^5.4.1",
+    "jsdom": "^25.0.1",
+    "luxon": "^3.5.0",
+    "pg": "^8.13.0",
+    "puppeteer": "^23.5.3",
+    "reflect-metadata": "^0.2.2",
+    "sharp": "^0.33.5",
+    "superagent": "^10.1.0",
+    "x-ray": "^2.3.4"
+  },
+  "hotHook": {
+    "boundaries": [
+      "./app/controllers/**/*.ts",
+      "./app/middleware/*.ts"
+    ]
+  },
+  "overrides": {
+    "strtok3": "8.0.1"
+  },
+  "resolutions": {
+    "strtok3": "8.0.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "strtok3": "8.0.1"
+    }
+  },
+  "prettier": "@adonisjs/prettier-config"
+}
