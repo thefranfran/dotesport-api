@@ -1,57 +1,52 @@
-import Articles from '#models/articles'
 import type { HttpContext } from '@adonisjs/core/http'
-import redis from '@adonisjs/redis/services/main'
 
-import axios from 'axios'
-import { encode } from 'blurhash'
-import sharp from 'sharp'
+import Articles from '#models/articles'
+import ImageServices from '#services/image_services'
 
 export default class ArticlesController {
+  /**
+   * Retrieves a paginated list of articles with their translations and additional metadata.
+   *
+   * @param {HttpContext} context - The HTTP context containing the request and response objects.
+   * @param {object} context.request - The HTTP request object.
+   * @param {object} context.response - The HTTP response object.
+   *
+   * @returns {Promise<void>} A JSON response containing the paginated list of articles,
+   *                          their translations, and additional metadata.
+   */
   async getArticles({ request, response }: HttpContext) {
-    const { locale, page = 1 } = request.qs()
+    const { locale, page = 1, search = '' } = request.qs()
     const limit = 7
 
     const articles = await Articles.query()
-      .select('id', 'posted_at', 'image', 'type', 'posted_at')
-      .orderBy('posted_at', 'desc')
+      .select('id', 'postedAt', 'image', 'type')
       .preload('article_translations', (query) => {
         query.select('locale', 'url', 'title', 'description')
       })
       .whereHas('article_translations', (query) => {
-        query.where('locale', locale)
+        query.where('locale', locale).if(search, (subquery) => {
+          subquery
+            .where('title', 'ilike', `%${search}%`)
+            .orWhere('description', 'ilike', `%${search}%`)
+        })
       })
+      .orderBy('posted_at', 'desc')
       .paginate(page, limit)
 
     const transformedArticles = await Promise.all(
       articles.toJSON().data.map(async (article) => {
         const translation = article.article_translations || {}
-
-        let blurhash = await redis.get(`blurhash:${article.image}`)
-        if (!blurhash) {
-          try {
-            const image = await axios.get(article.image, { responseType: 'arraybuffer' })
-            const imageBuffer = Buffer.from(image.data, 'binary')
-            const { data, info } = await sharp(imageBuffer)
-              .raw()
-              .ensureAlpha()
-              .toBuffer({ resolveWithObject: true })
-            blurhash = encode(new Uint8ClampedArray(data), info.width, info.height, 4, 4)
-            await redis.set(`blurhash:${article.image}`, blurhash, 'EX', 60 * 60 * 24)
-          } catch (error) {
-            console.error('Error generating blurhash:', error)
-          }
-        }
+        const blurhash = await new ImageServices().blurhash(article.image)
 
         return {
           id: article.id,
-          postedAt: article.posted_at,
+          posted_at: article.postedAt,
           image: article.image,
           type: article.type,
           locale: translation.locale,
           url: translation.url,
           title: translation.title,
           description: translation.description.substring(0, 70).concat('...'),
-          articlesId: translation.article_id,
           blurhash,
         }
       })

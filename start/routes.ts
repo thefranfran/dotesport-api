@@ -20,4 +20,8 @@ router
   })
   .prefix('/esports')
 
-router.get('/articles', [ArticlesController, 'getArticles'])
+router
+  .group(() => {
+    router.get('/all', [ArticlesController, 'getArticles'])
+  })
+  .prefix('/articles')
